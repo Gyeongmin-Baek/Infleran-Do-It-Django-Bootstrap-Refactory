@@ -1,0 +1,32 @@
+{% extends 'base.html' %}
+{% load bootstrap4 %}
+{% load socialaccount %}
+
+{% block head_title %}
+	로그인
+{% endblock %}
+{% block main_area %}
+	<div class="container my-5">
+		<div class="card mx-auto"
+			 style="max-width: 600px;">
+			<div class="card-header">
+				<h1 class="h5 mb-0">로그인</h1>
+			</div>
+			<div class="card-body">
+				<form method="POST">
+					{% csrf_token %}
+					{% bootstrap_form form %}
+					<button type="submit"
+							class="btn btn-primary">로그인
+					</button>
+				</form>
+			</div>
+			<div class="card-footer text-muted">
+				계정이 없으신가요? <a href="{% url 'users:signup' %}">회원가입</a>
+			</div>
+		</div>
+	</div>
+{% endblock %}
+
+{% block side_bar %}
+{% endblock %}

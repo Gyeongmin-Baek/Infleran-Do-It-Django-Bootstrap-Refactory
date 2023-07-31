@@ -1,0 +1,24 @@
+<form method="post"
+	  action="{% url 'blog:category_management' %}"
+	  id="category-management">
+	{% csrf_token %}
+
+	<div class="form-group">
+
+		{{ category_form.name.label_tag }}
+		{{ category_form.name }}
+
+	</div>
+	<div class="modal-footer">
+		<button type="submit"
+				name="action"
+				value="create"
+				class="btn btn-primary">생성
+		</button>
+		<a role="button"
+		   type="button"
+		   class="btn btn-secondary"
+		   data-dismiss="modal">닫기
+		</a>
+	</div>
+</form>

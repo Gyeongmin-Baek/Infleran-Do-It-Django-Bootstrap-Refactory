@@ -1,0 +1,55 @@
+{% extends 'base.html' %}
+{% load crispy_forms_filters %}
+{% load crispy_forms_tags %}
+{% load static %}
+
+{% block head_title %}
+	{% if view_name == 'create' %}
+		Create Post - Blog
+	{% elif view_name == 'update' %}
+		Edit Post - Blog
+	{% endif %}
+{% endblock %}
+
+{% block forms_extrahead %}
+	<link href="{% static 'blog/css/blog-forms.css' %}"
+		  rel="stylesheet"
+		  type="text/css">
+{% endblock %}
+
+{% block main_area %}
+	{% if view_name == 'create' %}
+		<h1>Create a New Post</h1>
+	{% elif view_name == 'update' %}
+		<h1>Edit Post</h1>
+	{% endif %}
+	<hr>
+	<form method="POST"
+		  enctype="multipart/form-data">
+		{% csrf_token %}
+		<table>
+			{{ form|crispy }}
+		</table>
+		<button type="submit"
+				class="btn btn-primary float-right">Submit
+		</button>
+		<br>
+	</form>
+	{{ form.media }}
+	<br>
+	<hr>
+	{#	db에 저장되어 있는지 확인 - form.instance에 pk가 db에 있으면 url을 불러옴 #}
+	{% if form.instance.pk %}
+		<a href="{{ form.instance.get_absolute_url }}"
+		   class="btn btn-secondary">
+			내용으로
+		</a>
+	{% endif %}
+	<a href="{% url 'blog:index' %}"
+	   class="btn btn-primary">
+		목록
+	</a>
+
+{% endblock %}
+{% block side_bar %}
+{% endblock %}

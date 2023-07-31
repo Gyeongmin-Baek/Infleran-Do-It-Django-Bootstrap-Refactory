@@ -1,0 +1,278 @@
+{% extends 'base.html' %}
+{% load bootstrap4 %}
+
+{% block head_title %}
+	{{ post.title }} | Blog
+{% endblock %}
+
+{% load deco_tag %}
+{% block main_area %}
+	{% bootstrap_messages %}
+	<div id="post-area">
+
+		<span class="badge badge-secondary float-right">{{ post.category|default:"미분류" }}</span>
+
+		<!-- Page Content -->
+
+		<!-- Title -->
+		<h1 class="mt-4">{{ post.title }}</h1>
+
+		{% if post.hook_text %}
+			<h5 class="text-muted">{{ post.hook_text }}</h5>
+		{% endif %}
+
+		<!-- Author -->
+		<p class="lead">
+			by
+			<a href="#">{{ post.author|upper }}</a>
+		</p>
+
+		<hr>
+
+		{% if user.is_authenticated and user == post.author %}
+
+			<a type="button"
+			   href="{% url 'blog:update_post' pk=post.pk %}"
+			   class="btn btn-info btn-sm float-right"><i class="fa-solid fa-pen"></i>
+				&nbsp;Edit Post
+			</a>
+
+			<a type="button"
+			   href="{% url 'blog:delete_post' pk=post.pk %}"
+			   class="btn btn-danger btn-sm float-right mr-2"><i class="fa-solid fa-pen"></i>
+				&nbsp;Delete Post
+			</a>
+
+		{% endif %}
+
+		<!-- Date/Time -->
+		<p>Posted on {{ post.created_at }}</p>
+
+		<hr>
+
+		<!-- Preview Image -->
+		{% if post.head_image %}
+			<img class="img-fluid rounded"
+				 src="{{ post.head_image.url }}"
+				 alt="{{ post.title }}">
+		{% else %}
+			<img class="card-img-top"
+				 src="https://picsum.photos/seed/{{ post.id }}/600/200"
+				 alt="{{ post.title }}">
+
+		{% endif %}
+
+		<hr>
+
+		<!-- Post Content -->
+		<p>{{ post.get_content_markdown|safe }}</p>
+
+		{% include 'blog/post_tags.html' %}
+
+		{% if post.file_upload %}
+			<br>
+			<br>
+			<a href="{{ post.file_upload.url }}"
+			   type="button"
+			   class="btn btn-outline-dark"
+			   role="button"
+			   onclick="return confirm('파일 {{ post.file_upload.name|filename }} ({{ post.file_upload.size|filesize }} MB) 을 다운로드하시겠습니까?')"
+			   download>Download: <i class="fa-solid {{ post.file_upload.name|file_icon }}"></i>
+				{{ post.file_upload.name|filename }}</a>
+
+		{% endif %}
+		<hr>
+	</div>
+	<div id="comment-area">
+		<!-- Comments Form -->
+		<div class="card my-4">
+			<h5 class="card-header">댓글 작성란:</h5>
+			<div class="card-body">
+				<form id="comment-form"
+					  method="POST"
+					  action="{% url 'blog:create_comment' post.pk %}">
+					{% csrf_token %}
+					{% if user.is_authenticated %}
+						<div class="form-group">
+							<label for="comment">내용:</label>
+							{{ comment_form.content }}
+						</div>
+					{% else %}
+						<div class="form-row">
+							<div class="form-group col-md-6">
+								<label for="guest_name">Guestname:</label>
+								{{ comment_form.guest_name }}
+							</div>
+							<div class="form-group col-md-6">
+								<label for="guest_password">GuestPassword:</label>
+								{{ comment_form.guest_password }}
+							</div>
+						</div>
+						<div class="form-group">
+							<label for="comment">Comment:</label>
+							{{ comment_form.content }}
+						</div>
+					{% endif %}
+
+					<button type="submit"
+							class="btn btn-primary">Submit
+					</button>
+					{% if user.is_authenticated %}
+						<a href="{% url 'users:logout' %}?next={{ request.path|urlencode }}#comment-area"
+						   type="button"
+						   class="btn btn-danger">Log Out</a>
+					{% else %}
+						<a
+							href="#"
+							data-toggle="modal"
+							data-target="#loginModal"
+							class="btn btn-info">
+							Log In
+						</a>
+					{% endif %}
+				</form>
+			</div>
+		</div>
+
+		<!-- Comment with nested comments -->
+
+		<!-- 전체 Comment를 순회할 때 comment.parent가 있는 대댓글은 댓글에 있으면 안됨!  -->
+
+		{% if post.comment_set.exists %}
+			{% for comment in comments %}
+				{% if not comment.parent %}
+					<div class="media mb-4"
+						 id="comment-{{ comment.pk }}">
+						<img class="d-flex mr-3 rounded-circle"
+							 src="https://placehold.it/50x50"
+							 alt="">
+						<div class="media-body">
+							{% if comment.author %}
+								<!-- 로그인 한 사용자는 자신의 댓글을 수정  -->
+								{% if user.is_authenticated and comment.author == user %}
+
+									<a class="float-right text-muted"
+									   role="button"
+									   data-toggle="modal"
+									   data-target="#deleteCommentModal-{{ comment.pk }}"
+									   id="comment-{{ comment.pk }}-delete-btn">댓글삭제</a>
+
+									<a class="float-right mr-3 text-muted"
+									   role="button"
+									   data-toggle="modal"
+									   data-target="#editCommentModal-{{ comment.pk }}"
+									   id="comment-{{ comment.pk }}-update-btn">댓글수정</a>
+									{% include 'blog/comment/comment_delete_modal.html' with modal_comment=comment %}
+									{% include 'blog/comment/comment_update_modal.html' with modal_comment=comment %}
+								{% endif %}
+
+								{% if user.is_authenticated and not comment.comment_set.exists %}
+									<a class="float-right mr-3 text-muted"
+									   role="button"
+									   data-toggle="modal"
+									   data-target="#replyCommentModal-{{ comment.pk }}"
+									   id="comment-{{ comment.pk }}-reply-btn">댓글추가</a>
+									{% include 'blog/comment/comment_create_reply_modal.html' %}
+								{% endif %}
+
+								<h5 class="mt-0">{{ comment.author }} &nbsp; &nbsp;
+									{% if not comment.is_updated %}
+										<small class="text-muted">{{ comment.created_at }}</small>
+									{% else %}
+										<small class="text-muted">Updated: {{ comment.updated_at }}</small>
+									{% endif %}</h5>
+
+							{% else %}
+								<!-- 로그인 하지 않은 사용자가 자신의 댓글을 수정  -->
+								<!-- 로그인을 하지 않았으며 comment.geust_name이 있는 댓글을 찾으면 됨 -->
+								{% if not user.is_authenticated and comment.guest_name %}
+
+									<a class="float-right text-muted"
+									   role="button"
+									   data-toggle="modal"
+									   data-target="#deleteCommentModal-{{ comment.pk }}"
+									   id="comment-{{ comment.pk }}-delete-btn">댓글삭제</a>
+
+									<a class="float-right mr-3 text-muted"
+									   role="button"
+									   data-toggle="modal"
+									   data-target="#editCommentModal-{{ comment.pk }}"
+									   id="comment-{{ comment.pk }}-update-btn">댓글수정</a>
+
+									{% include 'blog/comment/comment_delete_modal.html' with modal_comment=comment %}
+									{% include 'blog/comment/comment_update_modal.html' with modal_comment=comment %}
+
+								{% endif %}
+
+								{% if user.is_authenticated and not comment.comment_set.exists %}
+									<a class="float-right mr-3 text-muted"
+									   role="button"
+									   data-toggle="modal"
+									   data-target="#replyCommentModal-{{ comment.pk }}"
+									   id="comment-{{ comment.pk }}-reply-btn">댓글추가</a>
+									{% include 'blog/comment/comment_create_reply_modal.html' %}
+								{% endif %}
+
+								<h5 class="mt-0">{{ comment.guest_name }} &nbsp; &nbsp;
+									{% if not comment.is_updated %}
+										<small class="text-muted">{{ comment.created_at }}</small>
+									{% else %}
+										<small class="text-muted">Updated: {{ comment.updated_at }}</small>
+									{% endif %}</h5>
+							{% endif %}
+
+							{{ comment.content|linebreaks }}
+
+
+							{% if comment.comment_set.exists %}
+
+								{% for nest_comment in comment.comment_set.all %}
+
+									{% if user.is_authenticated and nest_comment.author == user %}
+										<a class="float-right text-muted"
+										   role="button"
+										   data-toggle="modal"
+										   data-target="#deleteCommentModal-{{ nest_comment.pk }}"
+										   id="comment-{{ nest_comment.pk }}-delete-btn">댓글삭제</a>
+
+										<a class="float-right mr-3 text-muted"
+										   role="button"
+										   data-toggle="modal"
+										   data-target="#editCommentModal-{{ nest_comment.pk }}"
+										   id="comment-{{ nest_comment.pk }}-update-btn">댓글수정</a>
+										{% include 'blog/comment/comment_delete_modal.html' with modal_comment=nest_comment %}
+										{% include 'blog/comment/comment_update_modal.html' with modal_comment=nest_comment %}
+									{% endif %}
+
+									<div class="media mt-4"
+										 id="comment-{{ nest_comment.pk }}">
+										<img class="d-flex mr-3 rounded-circle"
+											 src="https://placehold.it/50x50"
+											 alt="">
+										<div class="media-body">
+											<h5 class="mt-0">{{ nest_comment.author }} &nbsp;&nbsp;
+												{% if not comment.is_updated %}
+													<small class="text-muted">{{ nest_comment.created_at }}</small>
+												{% else %}
+													<small class="text-muted">Updated: {{ nest_comment.updated_at }}</small>
+												{% endif %}</h5>
+											{{ nest_comment.content|linebreaks }}
+										</div>
+									</div>
+								{% endfor %}
+							{% endif %}
+						</div>
+					</div>
+				{% endif %}
+			{% endfor %}
+		{% endif %}
+	</div>
+
+
+
+
+
+
+
+
+{% endblock %}

@@ -1,0 +1,17 @@
+{% extends 'base.html' %}
+
+{% block main_area %}
+	<form method="post">
+		{% csrf_token %}
+		<div class="alert alert-danger">
+			정말 삭제하시겠습니까?
+		</div>
+
+		<a href="{{ post.get_absolute_url }}" class="btn btn-secondary">
+			내용보기
+		</a>
+
+		<button type="submit" class="btn btn-danger">삭제하겠습니다.</button>
+
+	</form>
+{% endblock %}

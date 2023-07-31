@@ -1,0 +1,137 @@
+<div class="col-md-4 col-lg-3">
+	<!-- Search Widget -->
+	<div class="card my-4">
+		<h5 class="card-header">Search</h5>
+		<div class="card-body">
+			<div class="input-group">
+				<input type="text"
+					   class="form-control"
+					   placeholder="Search for..."
+					   id="search-input">
+				<span class="input-group-append">
+                                <button class="btn btn-secondary"
+										type="button"
+										onclick="searchPost();">Go!</button>
+                            </span>
+			</div>
+		</div>
+	</div>
+
+	<!-- Categories Widget -->
+	<div class="card my-4"
+		 id="categories-card">
+		<h5 class="card-header">Categories</h5>
+		<div class="card-body">
+			<div class="row">
+				<div class="col-lg-12">
+					<ul class="list-unstyled mb-0">
+						{% for category in categories %}
+							<li>
+								<a href="{% url 'blog:category_page' category.slug %}">{{ category }} ({{ category.post_set.count }})</a>
+							</li>
+						{% endfor %}
+						<li>
+							<a href="{% url 'blog:no_category_page' %}">미분류 ({{ no_category_post_count }})</a>
+						</li>
+					</ul>
+				</div>
+			</div>
+		</div>
+
+		<div class="card-footer">
+			<button type="button"
+					class="btn btn-secondary btn-block"
+					data-toggle="modal"
+					data-target="#categoryModal"
+					{% if not is_admin %}disabled{% endif %}>
+				카테고리 관리
+			</button>
+
+		</div>
+
+		<!-- 카테고리 모달 -->
+		<!-- Modal -->
+		<div class="modal fade"
+			 id="categoryModal"
+			 tabindex="-1"
+			 aria-labelledby="categoryModalLabel"
+			 aria-hidden="true">
+			<div class="modal-dialog">
+				<div class="modal-content">
+					<div class="modal-header">
+						<h5 class="modal-title"
+							id="categoryModalLabel">카테고리 관리</h5>
+						<button type="button"
+								class="close"
+								data-dismiss="modal"
+								aria-label="Close">
+							<span aria-hidden="true">&times;</span>
+						</button>
+					</div>
+					<div class="modal-body">
+						<div class="card">
+							<div class="card-header">
+								<!-- 탭 버튼 -->
+								<ul class="nav nav-tabs card-header-tabs">
+									<li class="nav-item">
+										<a class="nav-link active"
+										   data-toggle="tab"
+										   href="#create_category">카테고리 생성</a>
+									</li>
+									<li class="nav-item">
+										<a class="nav-link"
+										   data-toggle="tab"
+										   href="#update_category">카테고리 수정</a>
+									</li>
+									<li class="nav-item">
+										<a class="nav-link"
+										   data-toggle="tab"
+										   href="#delete_category">카테고리 삭제</a>
+									</li>
+								</ul>
+							</div>
+							<div class="card-body">
+								<!-- 탭 콘텐츠 -->
+								<div class="tab-content">
+									<div class="tab-pane fade show active"
+										 id="create_category">
+										<ol>
+											{% for category in categories %}
+												<li>{{ category }}</li>
+											{% endfor %}
+										</ol>
+										{% include 'blog/category_management/category_form.html' %}
+									</div>
+									<div class="tab-pane fade"
+										 id="update_category">
+										{% include 'blog/category_management/category_update_form.html' %}
+									</div>
+									<div class="tab-pane fade"
+										 id="delete_category">
+										{% include 'blog/category_management/category_delete_form.html' %}
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	<script>
+		function searchPost(){
+            let searchValue = document.getElementById('search-input').value.trim();
+            if (searchValue.length > 1){
+                location.href="/blog/search/" + searchValue + "/";
+			}
+            else {
+                alert('검색어 (' + searchValue + ')가 너무 짧습니다.');
+			}
+		}
+        document.getElementById('search-input').addEventListener('keyup', function (event){
+            if(event.key == 'Enter'){
+                searchPost();
+			}
+		})
+	</script>
+</div>

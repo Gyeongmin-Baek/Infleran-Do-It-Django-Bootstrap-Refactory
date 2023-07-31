@@ -1,0 +1,31 @@
+<form method="post"
+	  action="{% url 'blog:category_management' %}"
+	  id="category-management-delete"
+		onsubmit="return confirm('해당 카테고리 항목을 정말로 삭제하시겠습니까?')">
+	{% csrf_token %}
+	<ul>
+		{% for category in categories %}
+			<li>
+				<input class="form-check-input"
+					   type="checkbox"
+					   name="items"
+					   value="{{ category }}"
+					   id="{{ category }}">
+				<label class="form-check-label"
+					   for="{{ category }}">{{ category }}</label>
+			</li>
+		{% endfor %}
+	</ul>
+	<div class="modal-footer">
+		<button type="submit"
+				name="action"
+				value="delete"
+				class="btn btn-danger">삭제
+		</button>
+		<a role="button"
+		   type="button"
+		   class="btn btn-secondary"
+		   data-dismiss="modal">닫기
+		</a>
+	</div>
+</form>
