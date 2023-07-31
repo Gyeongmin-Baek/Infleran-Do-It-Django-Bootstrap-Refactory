@@ -1,6 +1,6 @@
 # Infleran-Do-It-Django-Bootstrap-Refactory
 
-# 프로젝트 - Inflearn-Do-It-Django-Bootstrap 기능 및 코드를 개선
+## 프로젝트 - Inflearn-Do-It-Django-Bootstrap 기능 및 코드를 개선
 
 1. 회원가입 기능 추가 - 로그인, 소셜로그인, 로그아웃, 회원가입 : 장고에서 제공하는 커스텀 유저와 djangoallauth 라이브러리에서 제공하는 유저 모델 사용
 2. 댓글 서비스 개선 - 로그인 하지 않은 사용자도 닉네임 패스워드를 사용해 자유롭게 의견을 낼 수 있으며, 로그인 한 사용자의 경우 추가로 대댓글 작성 가능
