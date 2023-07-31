@@ -13,4 +13,4 @@
 
 이 프로젝트는 MIT 라이선스를 따릅니다. 자세한 내용은 LICENSE 파일을 참조하세요.
 
-이 프로젝트는 [saintdragon2/do_it_django_a_to_z] https://github.com/saintdragon2/do_it_django_a_to_z의 코드를 기반으로 하여 리팩토링되었습니다.
+이 프로젝트는 [saintdragon2/do_it_django_a_to_z] https://github.com/saintdragon2/do_it_django_a_to_z 의 코드를 기반으로 하여 리팩토링되었습니다.
