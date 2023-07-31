@@ -26,6 +26,11 @@
 1. 프로젝트 git clone 후 pip install -r requirements.txt를 통해 필요한 파이썬 라이브러리를 다운
 2. python manage.py를 통해 서버를 실행하고 웹 브라우저에서 `http://localhost:8000`으로 접속
 
+## 관련 이미지
+<img width="600" alt="스크린샷 2023-07-31 오전 10 58 42" src="https://github.com/Gyeongmin-Baek/do-It-django-bootstrap-refactory/assets/69837186/d8771990-a8a6-4618-a3f8-1bc7bb8ca318">
+
+<img width="600" alt="스크린샷 2023-07-31 오전 10 57 57" src="https://github.com/Gyeongmin-Baek/do-It-django-bootstrap-refactory/assets/69837186/44f5ae83-aee5-4fb9-be05-dd295f8b1790">
+
 ## 라이선스
 
 이 프로젝트는 MIT 라이선스를 따릅니다. 자세한 내용은 LICENSE 파일을 참조하세요.
