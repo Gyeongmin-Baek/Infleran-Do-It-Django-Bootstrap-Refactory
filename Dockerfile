@@ -1,5 +1,5 @@
 # pull of official base image
-FROM python:3.8-slim-buster
+FROM python:3.10-slim-buster
 
 # set work directory
 WORKDIR /usr/src/app
@@ -8,7 +8,7 @@ WORKDIR /usr/src/app
 ENV PYTHONDONTWRITEBYTECODE 1
 ENV PYTHONBUFFERED 1
 
-COPY .. /user/src/app/
+COPY . /usr/src/app/
 
 # intsall dependencies
 RUN pip install --upgrade pip
